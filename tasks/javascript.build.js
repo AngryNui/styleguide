@@ -64,14 +64,18 @@ async function build(module) {
   }
 
   if (bundle && process.env.NODE_ENV !== 'production') {
-    const { map } = await bundle.generate(outputOptions);
+    try {
+      const { map } = await bundle.generate(outputOptions);
 
-    const obj = JSON.parse(map.toString());
-    obj.sources = obj.sources.reverse();
-    const sourceFile = shorten(obj.sources[0]);
-    const sourceImports = obj.sources.slice(1);
-    if (sourceImports.length && !importMap[sourceFile]) {
-      importMap[sourceFile] = sourceImports.map(str => shorten(str));
+      const obj = JSON.parse(map.toString());
+      obj.sources = obj.sources.reverse();
+      const sourceFile = shorten(obj.sources[0]);
+      const sourceImports = obj.sources.slice(1);
+      if (sourceImports.length && !importMap[sourceFile]) {
+        importMap[sourceFile] = sourceImports.map(str => shorten(str));
+      }
+    } catch (e) {
+      // js-file is Empty
     }
   }
 }
